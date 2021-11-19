@@ -1,0 +1,40 @@
+# Large files
+geometry/sphere/sphere520K*
+
+# file types
+*.pyc
+*.txt
+*.o
+*.so
+*_wrap.cxx
+*.log
+
+# regression test output
+tests/regression_tests/figs/*
+_build
+
+# output folders
+examples/sphere/output/
+examples/lys/output/
+examples/1PGBmut_sensor/output/
+examples/two_spheres/output/
+examples/lspr_silver/output/
+examples/lspr_gold/output/
+examples/lspr_7_spheres/output/
+
+
+# compiletime stuff
+PyGBe.egg-info/
+build/
+dist/
+pygbe/tree/calculateMultipoles.py
+pygbe/tree/calculateMultipoles_wrap.cpp
+pygbe/tree/direct.py
+pygbe/tree/direct_wrap.cpp
+pygbe/tree/multipole.py
+pygbe/tree/multipole_wrap.cpp
+pygbe/util/semi_analyticalwrap.py
+pygbe/util/semi_analyticalwrap_wrap.cpp
+
+# large examples
+examples/big_sphere/
