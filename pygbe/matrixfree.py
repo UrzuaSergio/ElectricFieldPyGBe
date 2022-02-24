@@ -637,9 +637,13 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
                         src = surf_array[s_idx]
                         if src.surf_type == 'dielectric_interface' or src.surf_type == 'stern_layer':
                             #Poisson-Boltzmann Equation with Electric Field
-                            #Assuming field comes in z direction 
-                            der_phi_Efield = -electric_field*src.normal[:,2]
-                            phi_Efield = -electric_field*src.zi
+                            #Assuming field comes in z direction
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                            else: 
+                                der_phi_Efield = -electric_field*src.normal[:,2]
+                                phi_Efield = -electric_field*src.zi
 
                             K_diag = -2 * pi * (s_idx == s)
                             V_diag = 0
@@ -676,11 +680,18 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
                                 F[s_start+s_size:s_start+2*s_size] += -K_lyr * tar.Precond[3, :] + V_lyr * tar.Precond[3, :]
 
                         elif src.surf_type == 'dirichlet_surface':
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = numpy.zeros(len(src.zi))
+                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                            else: 
+                                der_phi_Efield = numpy.zeros(len(src.zi))
+                                phi_Efield = -electric_field*src.zi                            
+
                             K_diag_II = -2 * pi * (s_idx == s)
                             V_diag_II = 0
                             IorE = 2
-                            K_lyr_EF_II, V_lyr_EF_II = project(-electric_field*src.zi,
-                                                       numpy.zeros(len(src.zi)),
+                            K_lyr_EF_II, V_lyr_EF_II = project(phi_Efield,
+                                                       der_phi_Efield,
                                                        LorY, src, tar, K_diag_II,
                                                        V_diag_II, IorE, s_idx, param, ind0, timing, kernel)
 
@@ -715,11 +726,18 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
                                   s].Precond[3, :]
 
                         elif src.surf_type == 'neumann_surface':
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = numpy.zeros(len(src.zi))
+                            else: 
+                                der_phi_Efield = -electric_field*src.normal[:,2]
+                                phi_Efield = numpy.zeros(len(src.zi))
+
                             K_diag_II = 0
                             V_diag_II = 0
                             IorE = 2
-                            K_lyr_EF_II, V_lyr_EF_II = project(numpy.zeros(len(src.zi)),
-                                                       -electric_field*src.normal[:,2],
+                            K_lyr_EF_II, V_lyr_EF_II = project(phi_Efield,
+                                                       der_phi_Efield,
                                                        LorY, src, tar, K_diag_II,
                                                        V_diag_II, IorE, s_idx, param, ind0, timing, kernel)
 
@@ -1188,9 +1206,13 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
                         src = surf_array[s_idx]
                         if src.surf_type == 'dielectric_interface' or src.surf_type == 'stern_layer':
                             #Poisson-Boltzmann Equation with Electric Field
-                            #Assuming field comes in z direction 
-                            der_phi_Efield = -electric_field*src.normal[:,2]
-                            phi_Efield = -electric_field*src.zi
+                            #Assuming field comes in z direction
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                            else: 
+                                der_phi_Efield = -electric_field*src.normal[:,2]
+                                phi_Efield = -electric_field*src.zi 
 
                             K_diag = -2 * pi * (s_idx == s)
                             V_diag = 0
@@ -1227,11 +1249,18 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
                                 F[s_start+s_size:s_start+2*s_size] += -K_lyr * tar.Precond[3, :] + V_lyr * tar.Precond[3, :]
 
                         elif src.surf_type == 'dirichlet_surface':
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = numpy.zeros(len(src.zi))
+                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                            else: 
+                                der_phi_Efield = numpy.zeros(len(src.zi))
+                                phi_Efield = -electric_field*src.zi                    
+
                             K_diag_II = -2 * pi * (s_idx == s)
                             V_diag_II = 0
                             IorE = 2
-                            K_lyr_EF_II, V_lyr_EF_II = project(-electric_field*src.zi,
-                                                       numpy.zeros(len(src.zi)),
+                            K_lyr_EF_II, V_lyr_EF_II = project(phi_Efield,
+                                                       der_phi_Efield,
                                                        LorY, src, tar, K_diag_II,
                                                        V_diag_II, IorE, s_idx, param, ind0, timing, kernel)
 
@@ -1266,11 +1295,18 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
                                   s].Precond[3, :]
 
                         elif src.surf_type == 'neumann_surface':
+                            if LorY == 2 and param.kappa > 1e-12:
+                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = numpy.zeros(len(src.zi))
+                            else: 
+                                der_phi_Efield = -electric_field*src.normal[:,2]
+                                phi_Efield = numpy.zeros(len(src.zi))
+
                             K_diag_II = 0
                             V_diag_II = 0
                             IorE = 2
-                            K_lyr_EF_II, V_lyr_EF_II = project(numpy.zeros(len(src.zi)),
-                                                       -electric_field*src.normal[:,2],
+                            K_lyr_EF_II, V_lyr_EF_II = project(phi_Efield,
+                                                       der_phi_Efield,
                                                        LorY, src, tar, K_diag_II,
                                                        V_diag_II, IorE, s_idx, param, ind0, timing, kernel)
 
