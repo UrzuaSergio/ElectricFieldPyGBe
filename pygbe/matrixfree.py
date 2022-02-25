@@ -639,8 +639,8 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
                             #Poisson-Boltzmann Equation with Electric Field
                             #Assuming field comes in z direction
                             if LorY == 2 and param.kappa > 1e-12:
-                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
-                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                                der_phi_Efield = -electric_field*param.kappa*numpy.exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*numpy.exp(-param.kappa*abs(src.zi))
                             else: 
                                 der_phi_Efield = -electric_field*src.normal[:,2]
                                 phi_Efield = -electric_field*src.zi
@@ -682,7 +682,7 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
                         elif src.surf_type == 'dirichlet_surface':
                             if LorY == 2 and param.kappa > 1e-12:
                                 der_phi_Efield = numpy.zeros(len(src.zi))
-                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*numpy.exp(-param.kappa*abs(src.zi))
                             else: 
                                 der_phi_Efield = numpy.zeros(len(src.zi))
                                 phi_Efield = -electric_field*src.zi                            
@@ -727,7 +727,7 @@ def generateRHS(field_array, surf_array, param, kernel, timing, ind0, electric_f
 
                         elif src.surf_type == 'neumann_surface':
                             if LorY == 2 and param.kappa > 1e-12:
-                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                der_phi_Efield = -electric_field*param.kappa*numpy.exp(-param.kappa*abs(src.zi))
                                 phi_Efield = numpy.zeros(len(src.zi))
                             else: 
                                 der_phi_Efield = -electric_field*src.normal[:,2]
@@ -1208,8 +1208,8 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
                             #Poisson-Boltzmann Equation with Electric Field
                             #Assuming field comes in z direction
                             if LorY == 2 and param.kappa > 1e-12:
-                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
-                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                                der_phi_Efield = -electric_field*param.kappa*numpy.exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*numpy.exp(-param.kappa*abs(src.zi))
                             else: 
                                 der_phi_Efield = -electric_field*src.normal[:,2]
                                 phi_Efield = -electric_field*src.zi 
@@ -1251,7 +1251,7 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
                         elif src.surf_type == 'dirichlet_surface':
                             if LorY == 2 and param.kappa > 1e-12:
                                 der_phi_Efield = numpy.zeros(len(src.zi))
-                                phi_Efield = electric_field*exp(-param.kappa*abs(src.zi))
+                                phi_Efield = electric_field*numpy.exp(-param.kappa*abs(src.zi))
                             else: 
                                 der_phi_Efield = numpy.zeros(len(src.zi))
                                 phi_Efield = -electric_field*src.zi                    
@@ -1296,7 +1296,7 @@ def generateRHS_gpu(field_array, surf_array, param, kernel, timing, ind0, electr
 
                         elif src.surf_type == 'neumann_surface':
                             if LorY == 2 and param.kappa > 1e-12:
-                                der_phi_Efield = -electric_field*param.kappa*exp(-param.kappa*abs(src.zi))
+                                der_phi_Efield = -electric_field*param.kappa*numpy.exp(-param.kappa*abs(src.zi))
                                 phi_Efield = numpy.zeros(len(src.zi))
                             else: 
                                 der_phi_Efield = -electric_field*src.normal[:,2]
