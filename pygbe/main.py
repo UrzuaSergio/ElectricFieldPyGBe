@@ -314,7 +314,7 @@ def main(argv=sys.argv, log_output=True, return_output_fname=False,
             param.Neq += 2 * N_aux
     print('\nTotal elements : {}'.format(param.N))
     print('Total equations: {}'.format(param.Neq))
-    print('Electric field: {} e/(Ang^2 eps_0)'.format(electric_field))
+    print('Electric field: {} e/(Ang eps_0)'.format(electric_field))
 
     results_dict['total_elements'] = param.N
     results_dict['N_equation'] = param.Neq
@@ -395,13 +395,23 @@ def main(argv=sys.argv, log_output=True, return_output_fname=False,
     results_dict['solve_time'] = solve_time
     numpy.savetxt(os.path.join(output_dir, phifname), phi)
 
+    for data in field_array:
+        if data.LorY == 2:
+            LorY = data.LorY
+            kappa = data.kappa
+
     # Put result phi in corresponding surfaces
     s_start = 0
     for surf in surf_array:
         if abs(electric_field) > 1e-12:
-            phi_electric_field = -electric_field*surf.zi
-            derphi_electric_field = -electric_field*surf.normal[:,2]
-            s_start = surf.fill_phi(phi, s_start, phi_electric_field, derphi_electric_field)
+            if LorY == 2 and kappa > 1e-12:
+                phi_electric_field = electric_field*numpy.exp(-kappa*abs(surf.zi))
+                derphi_electric_field = -electric_field*kappa*numpy.exp(-kappa*abs(surf.zi))
+                s_start = surf.fill_phi(phi, s_start, phi_electric_field, derphi_electric_field)
+            else:
+                phi_electric_field = -electric_field*surf.zi
+                derphi_electric_field = -electric_field*surf.normal[:,2]
+                s_start = surf.fill_phi(phi, s_start, phi_electric_field, derphi_electric_field)
         else:
             s_start = surf.fill_phi(phi, s_start)
 
